@@ -4,29 +4,47 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public Transform bulletSpawn;
-    public Rigidbody bulletPrefab;
-    public float bulletSpeed = 50;
-
-    [Header("Audio")]
-    
-    public AudioSource aud;
-    public AudioClip gunshotClip;
-    [Range(0f,1f)]
-    public float gunshotVolume = .5f;
+    ItemController item;
 
     // Update is called once per frame
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.Mouse0)) {
-            Fire();
+            Debug.Log("Mouse0 presed!");
+            if(item != null) {
+                Debug.Log("Calling item.Fire()");
+                item.Fire();
+            }
+        }
+
+        if(Input.GetKeyDown(KeyCode.Q)) {
+            Debug.Log("Q pressed.");
+            if(item != null) {
+                item.Drop();
+                item = null;
+            }
         }
     }
 
-    void Fire() {
-        Rigidbody bullet = Instantiate(bulletPrefab, bulletSpawn.position, bulletSpawn.rotation); 
-        bullet.AddRelativeForce(Vector3.forward * bulletSpeed, ForceMode.Impulse);
-        Destroy(bullet.gameObject, 4);
-        aud.PlayOneShot(gunshotClip, gunshotVolume);
+    public Transform hand;
+
+    void OnTriggerEnter(Collider other) {
+        if(other.gameObject.CompareTag("Pickupable")) {
+            if(item == null) {
+                // we can pick up the object!
+                item = other.gameObject.GetComponent<ItemController>();
+                // move the object to our hand.
+                other.gameObject.transform.position = hand.position;
+                // make the object a child of the hand so it follows.
+                other.gameObject.transform.SetParent(hand);
+                // make the object face the same direction as the hand.
+                other.gameObject.transform.rotation = hand.rotation;
+                // keep the gun from falling
+                other.GetComponent<Rigidbody>().isKinematic = true;
+            }
+            else {
+                Debug.Log("Already holding something.");
+            }
+        }
     }
 }

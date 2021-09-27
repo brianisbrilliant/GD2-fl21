@@ -33,7 +33,7 @@ public class AnimPatrol : MonoBehaviour
 
     IEnumerator GoToNextPoint() {
         Debug.Log("Starting GoToNextPoint()");
-        // if no points exist
+        // if no points exist, do nothing
         if(points.Length == 0) {
             yield return new WaitForEndOfFrame();     // exit this method()
         }
@@ -57,6 +57,11 @@ public class AnimPatrol : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // if the navMeshAgent doesn't exist, do nothing.
+        if(agent == null) {
+            return;
+        }
+
         anim.SetFloat("Speed", agent.velocity.magnitude);
         anim.SetBool("Attacking", startAttacking);
 
