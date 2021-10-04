@@ -7,6 +7,7 @@ TagManager:
   - Fire
   - Bullet
   - Pickupable
+  - Enemy
   layers:
   - Default
   - TransparentFX
